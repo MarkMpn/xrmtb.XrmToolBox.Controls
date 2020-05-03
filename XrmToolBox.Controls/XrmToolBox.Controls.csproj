@@ -187,11 +187,23 @@
     <Compile Include="Controls\EntitiesDropdownBaseControl.Designer.cs">
       <DependentUpon>EntitiesDropdownBaseControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LookupControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LookupControl.Designer.cs">
+      <DependentUpon>LookupControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\EntityMetadataListViewBase.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EntityMetadataListViewBase.Designer.cs">
       <DependentUpon>EntityMetadataListViewBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LookupSingleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\LookupSingleForm.Designer.cs">
+      <DependentUpon>LookupSingleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\XMLViewer.cs">
       <SubType>Component</SubType>
@@ -237,6 +249,7 @@
     <Compile Include="Controls\EntitiesListControl.Designer.cs">
       <DependentUpon>EntitiesListControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helper\LookupHelper.cs" />
     <Compile Include="Helper\MetadataHelper.cs" />
     <Compile Include="Helper\SerializationStyle.cs" />
     <Compile Include="Controls\SolutionsDropdownControl.cs">
@@ -293,6 +306,9 @@
     <EmbeddedResource Include="Controls\CRMGridView.resx">
       <DependentUpon>CRMGridView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LookupControl.resx">
+      <DependentUpon>LookupControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\EntitiesDropdownControl.resx">
       <DependentUpon>EntitiesDropdownControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -307,6 +323,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\GlobalOptionSetListControl.resx">
       <DependentUpon>GlobalOptionSetListControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LookupSingleForm.resx">
+      <DependentUpon>LookupSingleForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\SolutionsDropdownControl.resx">
       <DependentUpon>SolutionsDropdownControl.cs</DependentUpon>
