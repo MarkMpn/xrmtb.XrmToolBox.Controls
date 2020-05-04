@@ -110,6 +110,8 @@ namespace xrmtb.XrmToolBox.Controls
         {
             InitializeComponent();
 
+            gvResults.OrganizationService = service;
+
             this.service = service;
             this.cache = cache;
             cbbEntities.Items.AddRange(entityNames);
@@ -136,7 +138,7 @@ namespace xrmtb.XrmToolBox.Controls
 
         private void BtnOkClick(object sender, EventArgs e)
         {
-            var entity = (Entity)lvResults.SelectedItems[0].Tag;
+            var entity = gvResults.SelectedRowRecords[0];
             SelectedEntity = entity.ToEntityReference();
             SelectedEntity.Name = entity.GetAttributeValue<string>(MetadataHelper.GetPrimaryAttribute(service, LogicalName).LogicalName);
             DialogResult = DialogResult.OK;
@@ -145,55 +147,17 @@ namespace xrmtb.XrmToolBox.Controls
 
         private void BtnSearchClick(object sender, EventArgs e)
         {
-            lvResults.Items.Clear();
-
             string newFetchXml = "";
             try
             {
                 if (txtSearch.Text.Length == 0) txtSearch.Text = "*";
 
                 var view = ((ViewInfo)cbbViews.SelectedItem).Entity;
-                var layout = new XmlDocument();
-                layout.LoadXml(view["layoutxml"].ToString());
 
                 var result = LookupHelper.ExecuteQuickFind(service, LogicalName, view, txtSearch.Text);
+                gvResults.DataSource = result;
 
-                foreach (var entity in result.Entities)
-                {
-                    bool isFirstCell = true;
-
-                    var item = new ListViewItem();
-                    item.Tag = entity;
-
-                    foreach (XmlNode cell in layout.SelectNodes("//cell"))
-                    {
-                        var attributeName = cell.Attributes["name"].Value;
-                        if (!entity.FormattedValues.TryGetValue(attributeName, out var value))
-                        {
-                            if (entity.Attributes.TryGetValue(attributeName, out var rawValue))
-                            {
-                                value = rawValue?.ToString();
-                            }
-
-                            if (value == null)
-                            {
-                                value = "";
-                            }
-                        }
-
-                        if (isFirstCell)
-                        {
-                            item.Text = value;
-                            isFirstCell = false;
-                        }
-                        else
-                        {
-                            item.SubItems.Add(value);
-                        }
-                    }
-
-                    lvResults.Items.Add(item);
-                }
+                ApplyColumnOrder();
 
                 if (result.MoreRecords)
                 {
@@ -213,26 +177,15 @@ namespace xrmtb.XrmToolBox.Controls
 
         private void CbbViewsSelectedIndexChanged(object sender, EventArgs e)
         {
-            lvResults.Columns.Clear();
+            ApplyColumnOrder();
+        }
 
+        private void ApplyColumnOrder()
+        {
             var view = ((ViewInfo)cbbViews.SelectedItem).Entity;
             var layout = new XmlDocument();
             layout.LoadXml(view["layoutxml"].ToString());
-
-            foreach (XmlNode cell in layout.SelectNodes("//cell"))
-            {
-                var ch = new ColumnHeader();
-                try
-                {
-                    ch.Text = metadata.Attributes.First(a => a.LogicalName == cell.Attributes["name"].Value).DisplayName.UserLocalizedLabel.Label;
-                    ch.Width = int.Parse(cell.Attributes["width"].Value);
-                }
-                catch
-                {
-                    ch.Text = cell.Attributes["name"].Value;
-                }
-                lvResults.Columns.Add(ch);
-            }
+            gvResults.ColumnOrder = String.Join(",", layout.SelectNodes("//cell/@name").OfType<XmlAttribute>().Select(a => a.Value));
         }
 
         private void CbbEntitiesSelectedIndexChanged(object sender, EventArgs e)
@@ -257,17 +210,6 @@ namespace xrmtb.XrmToolBox.Controls
             metadata = MetadataHelper.GetEntity(service, LogicalName);
         }
 
-        private void LvResultsColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            lvResults.Sorting = lvResults.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
-            lvResults.ListViewItemSorter = new ListViewItemComparer(e.Column, lvResults.Sorting);
-        }
-
-        private void LvResultsDoubleClick(object sender, EventArgs e)
-        {
-            BtnOkClick(null, null);
-        }
-
         private void txtSearch_Enter(object sender, EventArgs e)
         {
             AcceptButton = btnSearch;
@@ -278,15 +220,14 @@ namespace xrmtb.XrmToolBox.Controls
             AcceptButton = btnOK;
         }
 
-        private void LookupSingle_Load(object sender, EventArgs e)
+        private void gvResults_SelectionChanged(object sender, EventArgs e)
         {
-            btnSearch.Height = txtSearch.Height;
-            btnSearch.Width = btnSearch.Height;
+            btnOK.Enabled = gvResults.SelectedRowRecords.Entities.Count == 1;
         }
 
-        private void lvResults_SelectedIndexChanged(object sender, EventArgs e)
+        private void gvResults_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            btnOK.Enabled = lvResults.SelectedItems.Count == 1;
+            BtnOkClick(null, null);
         }
     }
 }
