@@ -156,6 +156,8 @@
             this.gvResults.ReadOnly = true;
             this.gvResults.RowHeadersVisible = false;
             this.gvResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gvResults.ShowAllColumnsInColumnOrder = true;
+            this.gvResults.ShowColumnsNotInColumnOrder = false;
             this.gvResults.ShowFriendlyNames = true;
             this.gvResults.ShowIdColumn = false;
             this.gvResults.ShowIndexColumn = false;
