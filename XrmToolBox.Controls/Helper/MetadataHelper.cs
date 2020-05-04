@@ -10,7 +10,7 @@ namespace xrmtb.XrmToolBox.Controls
 {
     public static class MetadataHelper
     {
-        private static Dictionary<string, EntityMetadata> entities = new Dictionary<string, EntityMetadata>();
+        private static Dictionary<IOrganizationService, Dictionary<string, EntityMetadata>> entities = new Dictionary<IOrganizationService, Dictionary<string, EntityMetadata>>();
 
         public static String[] entityProperties = { "LogicalName", "DisplayName", "ObjectTypeCode", "IsManaged", "IsCustomizable", "IsCustomEntity", "IsIntersect", "IsValidForAdvancedFind" };
         public static String[] entityDetails = { "Attributes", "ManyToOneRelationships", "OneToManyRelationships", "ManyToManyRelationships", "SchemaName", "LogicalCollectionName", "PrimaryIdAttribute" };
@@ -46,17 +46,24 @@ namespace xrmtb.XrmToolBox.Controls
             return null;
         }
 
-        private static EntityMetadata GetEntity(IOrganizationService service, string entity)
+        public static EntityMetadata GetEntity(IOrganizationService service, string entity)
         {
-            if (!entities.ContainsKey(entity))
+            if (!entities.TryGetValue(service, out var serviceEntities))
+            {
+                serviceEntities = new Dictionary<string, EntityMetadata>();
+                entities.Add(service, serviceEntities);
+            }
+
+            if (!serviceEntities.ContainsKey(entity))
             {
                 var response = LoadEntityDetails(service, entity);
                 if (response != null && response.EntityMetadata != null && response.EntityMetadata.Count == 1 && response.EntityMetadata[0].LogicalName == entity)
                 {
-                    entities.Add(entity, response.EntityMetadata[0]);
+                    serviceEntities.Add(entity, response.EntityMetadata[0]);
                 }
             }
-            return entities[entity];
+
+            return serviceEntities[entity];
         }
 
         public static AttributeMetadata GetPrimaryAttribute(IOrganizationService service, string entity)

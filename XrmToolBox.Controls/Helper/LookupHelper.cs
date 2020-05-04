@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Metadata;
@@ -11,12 +9,41 @@ using Microsoft.Xrm.Sdk.Query;
 
 namespace xrmtb.XrmToolBox.Controls.Helper
 {
+    /// <summary>
+    /// Helper methods to work with Quick Find views
+    /// </summary>
     static class LookupHelper
     {
-        public static EntityCollection ExecuteQuickFind(IOrganizationService service, string logicalName, string search)
+        /// <summary>
+        /// Runs a Quick Find search
+        /// </summary>
+        /// <param name="service">The <see cref="IOrganizationService"/> to use to run the query</param>
+        /// <param name="logicalName">The logical name of the entity to search</param>
+        /// <param name="search">The value to search for</param>
+        /// <param name="cache">An <see cref="IDictionary{TKey, TValue}"/> to use to cache the Quick Find view definitions for each entity type</param>
+        /// <returns>A list of matching record</returns>
+        public static EntityCollection ExecuteQuickFind(IOrganizationService service, string logicalName, string search, IDictionary<string,Entity> cache)
         {
+            var view = LoadQuickFindView(service, logicalName, cache);
+            return ExecuteQuickFind(service, logicalName, view, search);
+        }
+
+        /// <summary>
+        /// Gets the definition of the Quick Find view for an entity
+        /// </summary>
+        /// <param name="service">The <see cref="IOrganizationService"/> to load the view definition from</param>
+        /// <param name="logicalName">The logical name of the entity to get the Quick Find view for</param>
+        /// <param name="cache">An <see cref="IDictionary{TKey, TValue}"/> to use to cache the Quick Find view definitions for each entity type</param>
+        /// <returns>The Quick Find view definition for the requested entity</returns>
+        public static Entity LoadQuickFindView(IOrganizationService service, string logicalName, IDictionary<string,Entity> cache)
+        {
+            if (cache.TryGetValue(logicalName, out var view))
+            {
+                return view;
+            }
+
             var qe = new QueryExpression("savedquery");
-            qe.ColumnSet = new ColumnSet("fetchxml");
+            qe.ColumnSet = new ColumnSet("fetchxml", "layoutxml", "name");
             qe.Criteria.AddCondition("returnedtypecode", ConditionOperator.Equal, logicalName);
             qe.Criteria.AddCondition("querytype", ConditionOperator.Equal, 4);
             qe.Criteria.AddCondition("isdefault", ConditionOperator.Equal, true);
@@ -27,15 +54,25 @@ namespace xrmtb.XrmToolBox.Controls.Helper
                 throw new ApplicationException("Unable to find Quick Find view for entity " + logicalName);
             }
 
-            return ExecuteQuickFind(service, logicalName, views.Entities[0], search);
+            view = views[0];
+            cache[logicalName] = view;
+            return view;
         }
 
+        /// <summary>
+        /// Runs a Quick Find search
+        /// </summary>
+        /// <param name="service">The <see cref="IOrganizationService"/> to use to run the query</param>
+        /// <param name="logicalName">The logical name of the entity to search</param>
+        /// <param name="view">The definition of the Quick Find view to use</param>
+        /// <param name="search">The value to search for</param>
+        /// <returns>A list of matching record</returns>
         public static EntityCollection ExecuteQuickFind(IOrganizationService service, string logicalName, Entity view, string search)
         {
             var fetchDoc = new XmlDocument();
             fetchDoc.LoadXml(view.GetAttributeValue<string>("fetchxml"));
             var filterNodes = fetchDoc.SelectNodes("fetch/entity/filter");
-            var metadata = MetadataHelper.LoadEntityDetails(service, logicalName).EntityMetadata[0];
+            var metadata = MetadataHelper.GetEntity(service, logicalName);
             foreach (XmlNode filterNode in filterNodes)
             {
                 ProcessFilter(metadata, filterNode, search);

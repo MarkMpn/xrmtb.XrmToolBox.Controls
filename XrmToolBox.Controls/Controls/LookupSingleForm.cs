@@ -1,11 +1,8 @@
-﻿using Microsoft.Crm.Sdk.Messages;
-using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Messages;
+﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Metadata;
-using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections;
-using System.Globalization;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
@@ -17,7 +14,12 @@ namespace xrmtb.XrmToolBox.Controls
     {
         class ViewInfo
         {
-            public Entity Entity { get; set; }
+            public ViewInfo(Entity view)
+            {
+                Entity = view;
+            }
+
+            public Entity Entity { get; }
 
             public override string ToString()
             {
@@ -101,13 +103,15 @@ namespace xrmtb.XrmToolBox.Controls
         }
 
         private readonly IOrganizationService service;
+        private readonly IDictionary<string, Entity> cache;
         private EntityMetadata metadata;
 
-        public LookupSingleForm(string[] entityNames, IOrganizationService service, string search)
+        public LookupSingleForm(string[] entityNames, IOrganizationService service, IDictionary<string,Entity> cache, string search)
         {
             InitializeComponent();
 
             this.service = service;
+            this.cache = cache;
             cbbEntities.Items.AddRange(entityNames);
 
             cbbEntities.SelectedIndex = 0;
@@ -134,7 +138,7 @@ namespace xrmtb.XrmToolBox.Controls
         {
             var entity = (Entity)lvResults.SelectedItems[0].Tag;
             SelectedEntity = entity.ToEntityReference();
-            SelectedEntity.Name = entity.GetAttributeValue<string>(metadata.PrimaryNameAttribute);
+            SelectedEntity.Name = entity.GetAttributeValue<string>(MetadataHelper.GetPrimaryAttribute(service, LogicalName).LogicalName);
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -167,10 +171,14 @@ namespace xrmtb.XrmToolBox.Controls
                         if (!entity.FormattedValues.TryGetValue(attributeName, out var value))
                         {
                             if (entity.Attributes.TryGetValue(attributeName, out var rawValue))
+                            {
                                 value = rawValue?.ToString();
+                            }
 
                             if (value == null)
+                            {
                                 value = "";
+                            }
                         }
 
                         if (isFirstCell)
@@ -216,9 +224,7 @@ namespace xrmtb.XrmToolBox.Controls
                 var ch = new ColumnHeader();
                 try
                 {
-                    ch.Text =
-                        metadata.Attributes.First(a => a.LogicalName == cell.Attributes["name"].Value)
-                            .DisplayName.UserLocalizedLabel.Label;
+                    ch.Text = metadata.Attributes.First(a => a.LogicalName == cell.Attributes["name"].Value).DisplayName.UserLocalizedLabel.Label;
                     ch.Width = int.Parse(cell.Attributes["width"].Value);
                 }
                 catch
@@ -234,36 +240,21 @@ namespace xrmtb.XrmToolBox.Controls
             cbbViews.Items.Clear();
             SelectedEntity = null;
 
-            var qe = new QueryExpression("savedquery");
-            qe.ColumnSet = new ColumnSet(true);
-            qe.Criteria.AddCondition("returnedtypecode", ConditionOperator.Equal, LogicalName);
-            qe.Criteria.AddCondition("querytype", ConditionOperator.Equal, 4);
-            var records = service.RetrieveMultiple(qe);
+            Entity view;
 
-            if (records.Entities.Count == 0)
+            try
             {
-                MessageBox.Show(this, "Cannot load views since this entity does not have Quick Find view defined", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                view = LookupHelper.LoadQuickFindView(service, LogicalName, cache);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            int index = 0;
-            int defaultViewIndex = 0;
-
-            foreach (var record in records.Entities)
-            {
-                if ((bool)record["isdefault"])
-                    defaultViewIndex = index;
-
-                var view = new ViewInfo();
-                view.Entity = record;
-
-                cbbViews.Items.Add(view);
-
-                index++;
-            }
-
-            cbbViews.SelectedIndex = defaultViewIndex;
-            metadata = ((RetrieveEntityResponse)service.Execute(new RetrieveEntityRequest { LogicalName = LogicalName, EntityFilters = EntityFilters.Attributes })).EntityMetadata;
+            cbbViews.Items.Add(new ViewInfo(view));
+            cbbViews.SelectedIndex = 0;
+            metadata = MetadataHelper.GetEntity(service, LogicalName);
         }
 
         private void LvResultsColumnClick(object sender, ColumnClickEventArgs e)

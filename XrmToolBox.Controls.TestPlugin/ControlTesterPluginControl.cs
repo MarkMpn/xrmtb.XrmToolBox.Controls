@@ -40,8 +40,9 @@ namespace Sample.XrmToolBox.TestPlugin
                 splitterGlobalOptsList.SplitterDistance =
                 splitterCRMGridView.SplitterDistance = 
                 splitterXmlViewerControl.SplitterDistance =
-                splitterXmlViewer.SplitterDistance = width =
-                splitterBoundListView.SplitterDistance = width;
+                splitterXmlViewer.SplitterDistance =
+                splitterBoundListView.SplitterDistance =
+                splitterLookup.SplitterDistance = width;
 
             // set up the properties detail
             SetPropertySelectedObject(radioEntListShowProps, propGridEntList, EntityListControl, null);
@@ -53,6 +54,7 @@ namespace Sample.XrmToolBox.TestPlugin
             SetPropertySelectedObject(radioGlobalOptsListShowProps, propGridGlobalOptsList, GlobalOptionSetList, null);
             SetPropertySelectedObject(radioCRMGridViewShowProps, propCRMGridView, CrmGridView, null);
             SetPropertySelectedObject(radioEntLVBaseShowProps, propGridEntLVBase, EntityListViewBase, null);
+            SetPropertySelectedObject(radioLookupShowProps, propGridLookup, lookupControl, lookupControl.SelectedEntity);
 
 
             // set up service references
@@ -292,6 +294,8 @@ namespace Sample.XrmToolBox.TestPlugin
             listViewEntCollection.UpdateConnection(newService);
 
             // solutionsDropdownControl1.UpdateConnection(newService);
+
+            lookupControl.UpdateConnection(newService);
         }
 
         #region Entity Listview Control event handlers
@@ -874,6 +878,16 @@ namespace Sample.XrmToolBox.TestPlugin
 
                 // MessageBox.Show(fetchResult.EntityCollection.EntityName);
             }
+        }
+
+        private void radioLookupShowProps_CheckedChanged(object sender, EventArgs e)
+        {
+            SetPropertySelectedObject(radioLookupShowProps, propGridLookup, lookupControl, lookupControl.SelectedEntity);
+        }
+
+        private void lookupControl_LinkClicked(object sender, EventArgs e)
+        {
+            textLookupLog.AppendText($"Link Clicked for {lookupControl.SelectedEntity.Name}\r\n");
         }
     }
 }

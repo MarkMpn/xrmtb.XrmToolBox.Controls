@@ -42,7 +42,10 @@
             this.txtLookup.Name = "txtLookup";
             this.txtLookup.Size = new System.Drawing.Size(350, 20);
             this.txtLookup.TabIndex = 0;
+            this.txtLookup.Click += new System.EventHandler(this.txtLookup_Click);
             this.txtLookup.TextChanged += new System.EventHandler(this.txtLookup_TextChanged);
+            this.txtLookup.Enter += new System.EventHandler(this.txtLookup_Enter);
+            this.txtLookup.Leave += new System.EventHandler(this.txtLookup_Leave);
             // 
             // btnLookup
             // 
