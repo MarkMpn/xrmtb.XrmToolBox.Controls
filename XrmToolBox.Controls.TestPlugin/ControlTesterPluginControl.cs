@@ -13,6 +13,7 @@ using xrmtb.XrmToolBox.Controls;
 using Subro.Controls;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
+using System.Threading;
 
 namespace Sample.XrmToolBox.TestPlugin
 {
@@ -290,8 +291,9 @@ namespace Sample.XrmToolBox.TestPlugin
             cdsDataComboBox.OrganizationService = newService;
 
             EntityListViewBase.UpdateConnection(newService);
-
             listViewEntCollection.UpdateConnection(newService);
+
+            cdsDataComboRetrieve.OrganizationService = newService;
 
             // solutionsDropdownControl1.UpdateConnection(newService);
 
@@ -863,19 +865,42 @@ namespace Sample.XrmToolBox.TestPlugin
             // exec the fetch and bind to the grid
             if (xmlViewerEntColl.IsValidXml)
             {
-                var fetchReq = new RetrieveMultipleRequest
+                listViewEntCollection.LoadData(xmlViewerEntColl.Text);
+            }
+        }
+
+        private void buttonCDSComboRetrieve_Click(object sender, EventArgs e)
+        {
+            // 
+            var infoPanel = InformationPanel.GetInformationPanel(this, "CDS Combo Box Retrieve Example", 340, 150);
+            infoPanel.BringToFront();
+            Refresh();
+
+            textBoxCDSComboProgress.Text = "";
+
+            cdsDataComboRetrieve.RetrieveMultiple(xmlViewerFetchCDSCombo.Text, 
+                (string message) => {
+
+                    textBoxCDSComboProgress.Text += $"{message}{Environment.NewLine}";
+                    InformationPanel.ChangeInformationPanelMessage(infoPanel, message);
+                    Refresh();
+
+                },
+                (int itemCount, Entity FirstItem) => 
                 {
-                    Query = new FetchExpression(xmlViewerEntColl.Text)
-                };
+                    // Thread.Sleep(2000);
+                    textBoxCDSComboProgress.Text += $"Count: {itemCount}{Environment.NewLine}";
+                    
+                    InformationPanel.ChangeInformationPanelMessage(infoPanel, $"Count: {itemCount}, Entity: {FirstItem?.Attributes.First().ToString()}");
+                    Refresh();
 
-                var fetchResult = Service.Execute(fetchReq) as RetrieveMultipleResponse;
+                    // Thread.Sleep(2000);
 
-                listViewEntCollection.LoadData(fetchResult.EntityCollection.Entities.ToList());
-
-                // CrmGridView.DataSource = fetchResult.EntityCollection;
-                // cdsDataComboBox.DataSource = fetchResult.EntityCollection;
-                // cdsDataComboBox.DisplayFormat = textCdsDataComboBoxFormat.Text;
-
+                    if (Controls.Contains(infoPanel)) {
+                        infoPanel.Dispose();
+                        Controls.Remove(infoPanel);
+                    }
+                });
                 // MessageBox.Show(fetchResult.EntityCollection.EntityName);
             }
         }
