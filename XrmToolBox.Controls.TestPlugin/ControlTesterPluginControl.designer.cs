@@ -217,7 +217,7 @@ namespace Sample.XrmToolBox.TestPlugin
             this.tabPageLookup = new System.Windows.Forms.TabPage();
             this.splitterLookup = new System.Windows.Forms.SplitContainer();
             this.lookupControl = new xrmtb.XrmToolBox.Controls.LookupControl();
-            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.panel11 = new System.Windows.Forms.Panel();
             this.radioLookupShowProps = new System.Windows.Forms.RadioButton();
             this.label22 = new System.Windows.Forms.Label();
@@ -327,7 +327,7 @@ namespace Sample.XrmToolBox.TestPlugin
             this.splitterLookup.Panel1.SuspendLayout();
             this.splitterLookup.Panel2.SuspendLayout();
             this.splitterLookup.SuspendLayout();
-            this.tableLayoutPanel6.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
             this.panel11.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -2832,7 +2832,7 @@ namespace Sample.XrmToolBox.TestPlugin
             // 
             // splitterLookup.Panel2
             // 
-            this.splitterLookup.Panel2.Controls.Add(this.tableLayoutPanel6);
+            this.splitterLookup.Panel2.Controls.Add(this.tableLayoutPanel7);
             this.splitterLookup.Size = new System.Drawing.Size(907, 564);
             this.splitterLookup.SplitterDistance = 298;
             this.splitterLookup.SplitterWidth = 10;
@@ -2852,28 +2852,28 @@ namespace Sample.XrmToolBox.TestPlugin
             this.lookupControl.TabIndex = 0;
             this.lookupControl.LinkClicked += new System.EventHandler(this.lookupControl_LinkClicked);
             // 
-            // tableLayoutPanel6
+            // tableLayoutPanel7
             // 
-            this.tableLayoutPanel6.ColumnCount = 2;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel6.Controls.Add(this.panel11, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.propGridLookup, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.textLookupLog, 1, 0);
-            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(2);
-            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.RowCount = 2;
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 90F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(599, 564);
-            this.tableLayoutPanel6.TabIndex = 20;
+            this.tableLayoutPanel7.ColumnCount = 2;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel7.Controls.Add(this.panel11, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.propGridLookup, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.textLookupLog, 1, 0);
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(2);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 2;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 90F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(599, 564);
+            this.tableLayoutPanel7.TabIndex = 20;
             // 
             // panel11
             // 
-            this.tableLayoutPanel6.SetColumnSpan(this.panel11, 2);
+            this.tableLayoutPanel7.SetColumnSpan(this.panel11, 2);
             this.panel11.Controls.Add(this.radioLookupShowProps);
             this.panel11.Controls.Add(this.label22);
             this.panel11.Controls.Add(this.radioLookupShowEntity);
@@ -3080,8 +3080,8 @@ namespace Sample.XrmToolBox.TestPlugin
             this.splitterLookup.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitterLookup)).EndInit();
             this.splitterLookup.ResumeLayout(false);
-            this.tableLayoutPanel6.ResumeLayout(false);
-            this.tableLayoutPanel6.PerformLayout();
+            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tableLayoutPanel7.PerformLayout();
             this.panel11.ResumeLayout(false);
             this.panel11.PerformLayout();
             this.ResumeLayout(false);
@@ -3270,7 +3270,7 @@ namespace Sample.XrmToolBox.TestPlugin
         private System.Windows.Forms.TabPage tabPageLookup;
         private System.Windows.Forms.SplitContainer splitterLookup;
         private xrmtb.XrmToolBox.Controls.LookupControl lookupControl;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.RadioButton radioLookupShowProps;
         private System.Windows.Forms.Label label22;

@@ -902,7 +902,6 @@ namespace Sample.XrmToolBox.TestPlugin
                     }
                 });
                 // MessageBox.Show(fetchResult.EntityCollection.EntityName);
-            }
         }
 
         private void radioLookupShowProps_CheckedChanged(object sender, EventArgs e)
